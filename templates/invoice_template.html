@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیش‌فاکتور {{ invoice.id }}</title>
+    <style>
+        @font-face {
+            font-family: 'Tahoma';
+            src: local('Tahoma');
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tahoma', 'B Nazanin', Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            padding: 20px;
+            font-size: 12pt;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 20pt;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .company-info {
+            font-size: 11pt;
+            color: #555;
+            margin-top: 10px;
+        }
+        
+        .invoice-info {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .invoice-info-row {
+            display: table-row;
+        }
+        
+        .invoice-info-label {
+            display: table-cell;
+            font-weight: bold;
+            padding: 5px 10px;
+            width: 30%;
+        }
+        
+        .invoice-info-value {
+            display: table-cell;
+            padding: 5px 10px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        
+        .items-table th {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #333;
+        }
+        
+        .items-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .items-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .items-table tr:hover {
+            background-color: #e8f4f8;
+        }
+        
+        .total-row {
+            background-color: #ecf0f1 !important;
+            font-weight: bold;
+            font-size: 13pt;
+        }
+        
+        .total-row td {
+            border-top: 2px solid #333;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .signature-box {
+            width: 45%;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>پیش‌فاکتور فروش و نصب آسانسور</h1>
+        <div class="company-info">
+            <strong>{{ company.name }}</strong><br>
+            {% if company.address %}آدرس: {{ company.address }}<br>{% endif %}
+            {% if company.phone %}تلفن: {{ company.phone }}{% endif %}
+        </div>
+    </div>
+    
+    <!-- Invoice Info -->
+    <div class="invoice-info">
+        <div class="invoice-info-row">
+            <div class="invoice-info-label">شماره فاکتور:</div>
+            <div class="invoice-info-value">{{ invoice.id }}</div>
+            <div class="invoice-info-label">تاریخ:</div>
+            <div class="invoice-info-value">{{ invoice.date }}</div>
+        </div>
+        <div class="invoice-info-row">
+            <div class="invoice-info-label">نام مشتری:</div>
+            <div class="invoice-info-value">{{ invoice.customer_name }}</div>
+            <div class="invoice-info-label">نام پروژه:</div>
+            <div class="invoice-info-value">{{ invoice.project_name }}</div>
+        </div>
+        <div class="invoice-info-row">
+            <div class="invoice-info-label">نوع سیستم:</div>
+            <div class="invoice-info-value">{{ invoice.system }}</div>
+            <div class="invoice-info-label">تعداد توقف:</div>
+            <div class="invoice-info-value">{{ invoice.floors }}</div>
+        </div>
+    </div>
+    
+    <!-- Items Table -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">ردیف</th>
+                <th style="width: 35%;">شرح کالا / خدمت</th>
+                <th style="width: 10%;">واحد</th>
+                <th style="width: 12%;">تعداد / متراژ</th>
+                <th style="width: 18%;">قیمت واحد (ریال)</th>
+                <th style="width: 20%;">قیمت کل (ریال)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.row }}</td>
+                <td style="text-align: right; padding-right: 10px;">{{ item.name }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+            
+            <!-- Total Row -->
+            <tr class="total-row">
+                <td colspan="5">جمع کل:</td>
+                <td>{{ invoice.total_price_formatted }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <p>امضا و مهر مشتری</p>
+        </div>
+        <div class="signature-box">
+            <p>امضا و مهر فروشنده</p>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>این پیش‌فاکتور صرفاً جهت اطلاع می‌باشد و پس از تایید نهایی، فاکتور رسمی صادر خواهد شد.</p>
+        <p>{{ company.name }} - تولید شده توسط سیستم خودکار</p>
+    </div>
+</body>
+</html>
